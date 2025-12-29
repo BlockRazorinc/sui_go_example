@@ -1,4 +1,4 @@
-module sui_go_demo
+module github.com/BlockRazorinc/sui_go_example
 
 go 1.24.0
 
