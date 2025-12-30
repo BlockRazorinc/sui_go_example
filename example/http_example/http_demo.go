@@ -165,11 +165,18 @@ func main() {
 	tx.SetGasBudget(est.GasBudget)
 
 	// Add tip into transaction
-	if err := blockrzsdk.AddTip(tx, est.TipAmount); err != nil {
+	// The required tip must exceed 1,000,000 mist
+	// and must exceed 5% of the gas budget
+	const minTip uint64 = 1000000
+	tipFee := est.TipAmount
+	if tipFee < minTip {
+		tipFee = minTip
+	}
+	if err := blockrzsdk.AddTip(tx, tipFee); err != nil {
 		log.Fatalf("[PREP] AddTip failed: %v", err)
 	}
 	log.Printf("[PREP] gasPrice=%d gasBudget=%d tip=%d txBytesLen=%d",
-		GasPrice, est.GasBudget, est.TipAmount, len(reqModel.TxBytes))
+		GasPrice, est.GasBudget, tipFee, len(reqModel.TxBytes))
 
 	// ============================================
 	//  Build HTTP request and Send to BlockRz
